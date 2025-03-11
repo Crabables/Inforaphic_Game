@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gas Laws Snakes and Ladders</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(10, 40px);
+      gap: 2px;
+    }
+    .cell {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    .active {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .question-container {
+      margin-top: 10px;
+      text-align: center;
+    }
+    .button-container button {
+      margin: 5px;
+      padding: 10px;
+      border: none;
+      background-color: #ddd;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="board" id="board"></div>
+  <div class="question-container">
+    <p id="question"></p>
+    <div class="button-container" id="button-container"></div>
+  </div>
+
+  <script>
+    let position = 1;
+    let lastTwoQuestions = [];
+    const board = document.getElementById('board');
+    const questionDisplay = document.getElementById('question');
+    const buttonContainer = document.getElementById('button-container');
+
+    const questions = [
+      { question: 'What is the SI unit for pressure?', options: ['Pascal', 'Joule', 'Newton', 'Watt'], answer: 0 },
+      { question: 'Which gas law relates pressure and volume?', options: ["Boyle's Law", "Charles' Law", "Avogadro's Law", "Ideal Gas Law"], answer: 0 },
+      { question: 'Calculate the volume if P=2atm, n=1mol, R=0.0821, T=300K', options: ['12.3L', '10.9L', '15.1L', '18.2L'], answer: 0 },
+      { question: 'Calculate the pressure if V=5L, n=1mol, R=0.0821, T=300K', options: ['4.92 atm', '5.12 atm', '3.89 atm', '6.23 atm'], answer: 0 },
+      { question: 'How many moles occupy 44.8L at STP?', options: ['1 mol', '2 mol', '0.5 mol', '4 mol'], answer: 1 },
+      { question: 'What law relates temperature and volume?', options: ["Charles' Law", "Boyle's Law", "Dalton's Law", "Avogadro's Law"], answer: 0 },
+      { question: 'What is the standard temperature in Kelvin?', options: ['273K', '373K', '100K', '0K'], answer: 0 },
+      { question: 'Calculate the final pressure if V1=2L, V2=4L, P1=3atm', options: ['1.5 atm', '6 atm', '3 atm', '0.75 atm'], answer: 0 },
+      { question: 'Which law describes the relationship between pressure and temperature?', options: ["Gay-Lussac's Law", "Boyle's Law", "Avogadro's Law", "Dalton's Law"], answer: 0 },
+      { question: 'Calculate the volume if T1=273K, T2=546K, V1=1L', options: ['2L', '1.5L', '3L', '0.5L'], answer: 0 },
+      { question: 'What gas law combines Boyle, Charles, and Gay-Lussac?', options: ["Combined Gas Law", "Ideal Gas Law", "Avogadro's Law", "Dalton's Law"], answer: 0 },
+      { question: 'Calculate the final temperature if P1=1atm, P2=2atm, T1=300K', options: ['600K', '450K', '150K', '300K'], answer: 0 }
+    ];
+
+    function getRandomQuestion() {
+      let qIndex;
+      do {
+        qIndex = Math.floor(Math.random() * questions.length);
+      } while (lastTwoQuestions.includes(qIndex));
+      lastTwoQuestions.push(qIndex);
+      if (lastTwoQuestions.length > 2) lastTwoQuestions.shift();
+      return questions[qIndex];
+    }
+
+    function answer(index, correct) {
+      if (index === correct) {
+        position += Math.floor(Math.random() * 6) + 1;
+        if (position >= 50) {
+          alert('🎉 Congratulations! You Finished the Game! 🎉');
+          location.reload();
+        } else {
+          renderBoard();
+        }
+      } else {
+        position -= Math.floor(Math.random() * 3) + 1;
+        if (position < 1) position = 1;
+        alert('Incorrect! You moved back.');
+        renderBoard();
+      }
+    }
+
+    function renderBoard() {
+      board.innerHTML = '';
+      for (let i = 1; i <= 50; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell' + (i === position ? ' active' : '');
+        cell.innerText = i;
+        board.appendChild(cell);
+      }
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const question = getRandomQuestion();
+      questionDisplay.innerText = question.question;
+      buttonContainer.innerHTML = '';
+
+      question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.innerText = option;
+        button.onclick = () => answer(index, question.answer);
+        buttonContainer.appendChild(button);
+      });
+    }
+
+    renderBoard();
+  </script>
+</body>
+</html>
